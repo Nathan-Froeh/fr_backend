@@ -1,9 +1,11 @@
 const express = require('express');
 const { parts } = require(__dirname + '/data.js');
+var cors = require('cors');
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -24,7 +26,7 @@ const getPage = (pageNumber) => {
   return parts.slice(startingIndex, endingIndex);
 };
 
-app.get('/parts', (req, res) => {
+app.get('/parts', cors({exposedHeaders: ['per-page', 'page-number', 'total-entries', 'total-pages']}), (req, res) => {
   const pageNumber = req.query.page || 1;
   const totalPages = Math.ceil(parts.length / pageSize);
   const result = getPage(pageNumber);
